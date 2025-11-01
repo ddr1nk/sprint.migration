@@ -72,6 +72,13 @@ if ($_POST["step_code"] == "migration_view_new") {
 
 $webdir = $versionManager->getWebDir();
 
+$getModuleColor = function ($moduleName) {
+    $colors = ['blue', 'pink', 'green', 'yellow', 'purple', 'cyan', 'orange'];
+    $hash = crc32($moduleName);
+    $index = abs($hash) % count($colors);
+    return $colors[$index];
+};
+
 $getOnclickMenu = function ($item) use ($webdir, $versionConfig) {
     $menu = [];
 
@@ -191,6 +198,10 @@ if (empty($versions)) {
                 Out::outToHtml($item['version'], [
                     'class' => 'sp-out sp-item-' . $item['status'],
                 ]);
+                if (!empty($item['module'])) {
+                    $moduleColor = $getModuleColor($item['module']);
+                    Out::outToHtml('[label:' . $moduleColor . ']' . Locale::getMessage('MODULE') . ': ' . $item['module'] . '[/]');
+                }
                 Out::outToHtml($item['file_status']);
                 Out::outToHtml($item['record_status']);
                 Out::outToHtml($tagMsg);

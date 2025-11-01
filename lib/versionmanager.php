@@ -202,7 +202,9 @@ class VersionManager
                 break;
             }
         }
-
+//        $GLOBALS['APPLICATION']->RestartBuffer();
+//        echo '<pre>' . print_r($result, true) . '</pre>';
+//        die;
         return $result;
     }
 
@@ -321,7 +323,21 @@ class VersionManager
     public function getVersionFile(string $versionName): string
     {
         $dir = $this->getVersionConfig()->getVal('migration_dir');
-        return $dir . '/' . $versionName . '.php';
+        $defaultFile = $dir . '/' . $versionName . '.php';
+
+        if (file_exists($defaultFile)) {
+            return $defaultFile;
+        }
+
+        $moduleDirs = $this->getModuleMigrationDirs();
+        foreach ($moduleDirs as $moduleInfo) {
+            $moduleFile = $moduleInfo['path'] . '/' . $versionName . '.php';
+            if (file_exists($moduleFile)) {
+                return $moduleFile;
+            }
+        }
+
+        return $defaultFile;
     }
 
     public function checkVersionName(string $versionName): bool
@@ -401,10 +417,72 @@ class VersionManager
                 'version' => $filename,
                 'location' => $item->getPathname(),
                 'ts' => $timestamp,
+                'module' => '',
             ];
         }
 
+        $moduleDirs = $this->getModuleMigrationDirs();
+        foreach ($moduleDirs as $moduleInfo) {
+            $items = new DirectoryIterator($moduleInfo['path']);
+            foreach ($items as $item) {
+                if (!$item->isFile()) {
+                    continue;
+                }
+
+                if ($item->getExtension() != 'php') {
+                    continue;
+                }
+
+                $filename = pathinfo($item->getPathname(), PATHINFO_FILENAME);
+                $timestamp = $this->getVersionTimestamp($filename);
+
+                if (!$timestamp) {
+                    continue;
+                }
+
+                if (!isset($files[$filename])) {
+                    $files[$filename] = [
+                        'version' => $filename,
+                        'location' => $item->getPathname(),
+                        'ts' => $timestamp,
+                        'module' => $moduleInfo['name'],
+                    ];
+                }
+            }
+        }
+
         return $files;
+    }
+
+    protected function getModuleMigrationDirs(): array
+    {
+        if (!$this->versionConfig->getVal('scan_module_migrations', false)) {
+            return [];
+        }
+
+        $result = [];
+        $localModulesDir = Module::getDocRoot() . '/local/modules';
+
+        if (!is_dir($localModulesDir)) {
+            return $result;
+        }
+
+        $modules = new DirectoryIterator($localModulesDir);
+        foreach ($modules as $module) {
+            if (!$module->isDir() || $module->isDot()) {
+                continue;
+            }
+
+            $migrationsDir = $module->getPathname() . '/migrations';
+            if (is_dir($migrationsDir)) {
+                $result[] = [
+                    'name' => $module->getFilename(),
+                    'path' => $migrationsDir,
+                ];
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -416,7 +494,9 @@ class VersionManager
 
         $files = $this->getFiles();
         foreach ($files as $meta) {
-            unlink($meta['location']);
+            if (empty($meta['module'])) {
+                unlink($meta['location']);
+            }
         }
 
         if (!empty($dir) && is_dir($dir)) {
@@ -603,7 +683,7 @@ class VersionManager
             return true;
         }
 
-        $textindex = $meta['version'] . $meta['description'] . $meta['tag'];
+        $textindex = $meta['version'] . $meta['description'] . $meta['tag'] . $meta['module'];
         $searchword = trim($filter['search']);
 
         return (false !== mb_stripos($textindex, $searchword, null, 'utf-8'));
@@ -640,6 +720,7 @@ class VersionManager
             'tag' => '',
             'file_status' => '',
             'record_status' => '',
+            'module' => '',
         ];
 
         if ($isRecord && $isFile) {
@@ -667,6 +748,7 @@ class VersionManager
         }
 
         $meta['location'] = realpath($file['location']);
+        $meta['module'] = $file['module'] ?? '';
 
         try {
             require_once($meta['location']);
@@ -737,7 +819,7 @@ class VersionManager
     {
         $success = 0;
 
-        if ($meta['is_file']) {
+        if ($meta['is_file'] && empty($meta['module'])) {
             Module::movePath(
                 $meta['location'],
                 $vmTo->getVersionFile($meta['version'])
@@ -776,7 +858,7 @@ class VersionManager
             $success = 1;
         }
 
-        if ($meta['is_file']) {
+        if ($meta['is_file'] && empty($meta['module'])) {
             Module::deletePath(
                 $meta['location']
             );

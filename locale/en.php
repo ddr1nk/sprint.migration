@@ -100,6 +100,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "CONFIG_version_timestamp_format"    => "Timestamp format for creating migration file",
         "CONFIG_version_timestamp_pattern"   => "Timestamp pattern for search migration files by timestamp format",
         "CONFIG_migration_hash_algo"         => "Hash algorithm for checking changes in the migration file",
+        "CONFIG_scan_module_migrations"      => "Scan migrations in local/modules/*/migrations folders",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -309,6 +310,8 @@ require_once __DIR__ . "/../lib/locale.php";
         "SETTAG_OK"              => "Tag for migration #VERSION# setting",
         "SETTAG_ERROR1"          => "Migrations for setting tag not found",
         "SETTAG_ERROR2"          => "Migration #VERSION# not found",
+        "MODULE"                 => "Module",
+        "PROJECT"                => "Project",
     ]
 );
 

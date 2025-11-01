@@ -100,6 +100,7 @@ require_once __DIR__ . "/../lib/locale.php";
         "CONFIG_version_timestamp_format"    => "Формат даты для создания файла миграции",
         "CONFIG_version_timestamp_pattern"   => "Регулярное выражение для поиска миграций по формату даты",
         "CONFIG_migration_hash_algo"         => "Алгоритм подсчета хеша для проверки изменений в файле миграции",
+        "CONFIG_scan_module_migrations"      => "Сканировать миграции в папках local/modules/*/migrations",
     ]
 );
 \Sprint\Migration\Locale::loadLocale(
@@ -308,6 +309,8 @@ require_once __DIR__ . "/../lib/locale.php";
         "SETTAG_OK"              => "Тег для миграции #VERSION# задан",
         "SETTAG_ERROR1"          => "Миграций для установки тега не найдено",
         "SETTAG_ERROR2"          => "Миграция #VERSION# не найдена",
+        "MODULE"                 => "Модуль",
+        "PROJECT"                => "Проект",
     ]
 );
 

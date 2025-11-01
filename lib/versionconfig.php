@@ -287,6 +287,12 @@ class VersionConfig
             $values['migration_hash_algo'] = 'md5';
         }
 
+        if (isset($values['scan_module_migrations'])) {
+            $values['scan_module_migrations'] = (bool)$values['scan_module_migrations'];
+        } else {
+            $values['scan_module_migrations'] = false;
+        }
+
         ksort($values);
         return $values;
     }

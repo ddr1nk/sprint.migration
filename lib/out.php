@@ -25,6 +25,10 @@ class Out
         'label:red'    => ["\x1b[41;37m", '<span class="sp-label sp-label-red">'],
         'label:green'  => ["\x1b[102;30m", '<span class="sp-label sp-label-green">'],
         'label:yellow' => ["\x1b[103;30m", '<span class="sp-label sp-label-yellow">'],
+        'label:purple' => ["\x1b[45;37m", '<span class="sp-label sp-label-purple">'],
+        'label:cyan'   => ["\x1b[106;30m", '<span class="sp-label sp-label-cyan">'],
+        'label:orange' => ["\x1b[48;5;208m", '<span class="sp-label sp-label-orange">'],
+        'label:gray'   => ["\x1b[47;30m", '<span class="sp-label sp-label-gray">'],
         'b'            => ["\x1b[1m", '<span class="sp-bold">'],
     ];
     protected static $needEol = false;

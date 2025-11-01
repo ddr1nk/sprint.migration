@@ -280,6 +280,30 @@ a.sp-item-unknown:visited {
     border-right: 1px solid #b00;
 }
 
+.sp-label-purple {
+    background: #e6d1ff;
+    border-bottom: 1px solid #9b59b6;
+    border-right: 1px solid #9b59b6;
+}
+
+.sp-label-cyan {
+    background: #c3f5ff;
+    border-bottom: 1px solid #17a2b8;
+    border-right: 1px solid #17a2b8;
+}
+
+.sp-label-orange {
+    background: #ffe4c3;
+    border-bottom: 1px solid #fd7e14;
+    border-right: 1px solid #fd7e14;
+}
+
+.sp-label-gray {
+    background: #e0e0e0;
+    border-bottom: 1px solid #888;
+    border-right: 1px solid #888;
+}
+
 .sp-optgroup-group {
     margin-bottom: 10px;
 }
